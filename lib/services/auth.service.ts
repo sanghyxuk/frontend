@@ -41,15 +41,15 @@ export interface OtpCheckResponse {
 
 // 인증 관련 API 서비스
 export const authService = {
-  // 회원가입
+  // 회원가입 (수정됨: /api 추가)
   register: async (data: RegisterRequest) => {
-    const response = await apiClient.post('/auth/register', data);
+    const response = await apiClient.post('/api/auth/register', data);
     return response.data;
   },
 
-  // 로그인
+  // 로그인 (수정됨: /api 추가)
   login: async (data: LoginRequest): Promise<LoginResponse> => {
-    const response = await apiClient.post('/auth/login', data);
+    const response = await apiClient.post('/api/auth/login', data);
     if (response.data.token) {
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('username', response.data.username);
@@ -63,15 +63,15 @@ export const authService = {
     return response.data;
   },
 
-  // OTP 활성화 여부 확인
+  // OTP 활성화 여부 확인 (수정됨: /api 추가)
   checkOtp: async (username: string): Promise<OtpCheckResponse> => {
-    const response = await apiClient.post('/auth/check-otp', { username });
+    const response = await apiClient.post('/api/auth/check-otp', { username });
     return response.data;
   },
 
-  // OTP 로그인
+  // OTP 로그인 (수정됨: /api 추가)
   loginWithOtp: async (data: LoginWithOtpRequest): Promise<LoginResponse> => {
-    const response = await apiClient.post('/auth/login-with-otp', data);
+    const response = await apiClient.post('/api/auth/login-with-otp', data);
     if (response.data.token) {
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('username', response.data.username);
@@ -85,56 +85,51 @@ export const authService = {
     return response.data;
   },
 
-  // 로그아웃
+  // 로그아웃 (수정됨: /api 추가)
   logout: async () => {
     try {
-      await apiClient.post('/auth/logout');
+      await apiClient.post('/api/auth/logout');
     } catch (error) {
-      // 로그아웃 API 실패해도 로컬 데이터는 삭제
       console.error('Logout API failed:', error);
     } finally {
       localStorage.removeItem('token');
       localStorage.removeItem('username');
       localStorage.removeItem('name');
       
-      // 로그아웃 상태 변경 이벤트 발생
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new Event('authStateChanged'));
       }
     }
   },
 
-  // 비밀번호 변경
+  // 비밀번호 변경 (수정됨: /api 추가)
   changePassword: async (data: ChangePasswordRequest) => {
-    const response = await apiClient.put('/auth/change-password', data);
+    const response = await apiClient.put('/api/auth/change-password', data);
     return response.data;
   },
 
-  // 비밀번호 재설정
+  // 비밀번호 재설정 (수정됨: /api 추가)
   resetPassword: async (data: ResetPasswordRequest) => {
-    const response = await apiClient.post('/auth/reset-password', data);
+    const response = await apiClient.post('/api/auth/reset-password', data);
     return response.data;
   },
 
-  // 아이디 찾기 (이메일 또는 전화번호)
+  // 아이디 찾기 (수정됨: /api 추가)
   findId: async (identifier: string) => {
-    // 이메일 형식인지 전화번호 형식인지 자동 감지
     const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier);
     const payload = isEmail 
       ? { email: identifier } 
       : { phoneNumber: identifier };
     
-    const response = await apiClient.post('/auth/find-id', payload);
+    const response = await apiClient.post('/api/auth/find-id', payload);
     return response.data;
   },
 
-  // 회원탈퇴
+  // 회원탈퇴 (수정됨: /api 추가)
   withdraw: async (password: string) => {
-    // DELETE /api/auth/delete-account, Bearer 토큰 필요
-    const response = await apiClient.delete('/auth/delete-account', {
+    const response = await apiClient.delete('/api/auth/delete-account', {
       data: { password },
     });
-    // 탈퇴 성공 시 로컬 데이터 삭제 및 이벤트 발생
     localStorage.removeItem('token');
     localStorage.removeItem('username');
     localStorage.removeItem('name');
