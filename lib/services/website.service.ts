@@ -1,54 +1,60 @@
 import apiClient from '@/lib/api-client';
+import type {
+  VulnerabilityAnalysisRequest,
+  VulnerabilityAnalysisResponse,
+  VulnerabilityAnalysisError,
+} from '@/lib/types/vulnerability.types';
 
-// 웹사이트 검사 관련 타입 정의
-export interface WebsiteInspectionRequest {
-  url: string;
-}
+/**
+ * 웹 취약점 분석 API 서비스
+ * 백엔드 엔드포인트: /api/analysis/start
+ */
+export const vulnerabilityService = {
+  /**
+   * 웹사이트 취약점 분석 시작
+   * @param url - 분석할 웹사이트 URL
+   * @returns 취약점 분석 결과
+   */
+  startAnalysis: async (
+    url: string
+  ): Promise<VulnerabilityAnalysisResponse> => {
+    try {
+      const response = await apiClient.post<VulnerabilityAnalysisResponse>(
+        '/analysis/start',
+        { url }
+      );
+      return response.data;
+    } catch (error: any) {
+      // 에러 응답 처리
+      if (error.response?.data) {
+        const errorData = error.response.data as VulnerabilityAnalysisError;
+        throw new Error(errorData.message || '분석 중 오류가 발생했습니다.');
+      }
+      throw new Error('서버와 통신할 수 없습니다.');
+    }
+  },
 
-export interface WebsiteInspectionResponse {
-  url: string;
-  status: 'safe' | 'warning' | 'dangerous';
-  score: number;
-  threats: string[];
-  recommendations: string[];
-  scanDate: string;
-}
+  /**
+   * URL 유효성 검증
+   * @param url - 검증할 URL
+   * @returns 유효한 URL인지 여부
+   */
+  validateUrl: (url: string): boolean => {
+    try {
+      const urlObj = new URL(url);
+      return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
+    } catch {
+      return false;
+    }
+  },
+};
 
-export interface InspectionHistory {
-  id: number;
-  url: string;
-  status: string;
-  score: number;
-  scanDate: string;
-}
-
-// 웹사이트 보안 검사 관련 API 서비스
+// 레거시 호환성을 위한 별칭 (기존 코드와의 호환성 유지)
 export const websiteService = {
-  // 웹사이트 보안 검사
-  inspectWebsite: async (
-    data: WebsiteInspectionRequest
-  ): Promise<WebsiteInspectionResponse> => {
-    const response = await apiClient.post('/website/inspect', data);
-    return response.data;
-  },
-
-  // 검사 이력 조회
-  getInspectionHistory: async (): Promise<InspectionHistory[]> => {
-    const response = await apiClient.get('/website/history');
-    return response.data;
-  },
-
-  // 특정 검사 결과 조회
-  getInspectionResult: async (
-    inspectionId: number
-  ): Promise<WebsiteInspectionResponse> => {
-    const response = await apiClient.get(`/website/inspection/${inspectionId}`);
-    return response.data;
-  },
-
-  // 검사 이력 삭제
-  deleteInspectionHistory: async (inspectionId: number) => {
-    const response = await apiClient.delete(`/website/history/${inspectionId}`);
-    return response.data;
+  /**
+   * @deprecated vulnerabilityService.startAnalysis 사용 권장
+   */
+  inspectWebsite: async (data: { url: string }) => {
+    return vulnerabilityService.startAnalysis(data.url);
   },
 };

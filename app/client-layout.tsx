@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation"
 import { Header } from "@/components/main-header"
 import { Footer } from "@/components/main-footer"
 import { Toaster } from "@/components/ui/toaster"
+import { Toaster as Sonner } from "@/components/ui/sonner"
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -41,6 +42,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
       <main>{children}</main>
       {!isHomePage && <Footer />}
       <Toaster />
+      <Sonner />
     </Suspense>
   )
 }

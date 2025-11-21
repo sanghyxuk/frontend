@@ -5,8 +5,12 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Shield, AlertTriangle, Info, XCircle, CheckCircle, Download, ArrowLeft, ChevronRight, X } from "lucide-react"
-import { useRouter } from "next/navigation"
-import type { ScanResult, ScanVulnerability } from "@/lib/types/scan-result"
+import { useRouter, useParams } from "next/navigation"
+import type { 
+  VulnerabilityAnalysisResponse, 
+  Vulnerability,
+  VULNERABILITY_SOLUTIONS
+} from "@/lib/types/vulnerability.types"
 
 interface ScanResultsViewProps {
   analysisId?: string
@@ -14,101 +18,101 @@ interface ScanResultsViewProps {
 
 export function ScanResultsView({ analysisId }: ScanResultsViewProps) {
   const router = useRouter()
-  const [scanResult, setScanResult] = useState<ScanResult | null>(null)
+  const params = useParams()
+  const [scanResult, setScanResult] = useState<VulnerabilityAnalysisResponse | null>(null)
   const [loading, setLoading] = useState(true)
-  const [selectedVuln, setSelectedVuln] = useState<ScanVulnerability | null>(null)
+  const [selectedVuln, setSelectedVuln] = useState<Vulnerability | null>(null)
 
   useEffect(() => {
     const fetchResults = async () => {
-      if (!analysisId) {
-        // Fallback for demo/testing without ID
+      const id = analysisId || params?.id
+      
+      // sessionStorage에서 최신 결과 가져오기
+      if (id === 'latest') {
+        const storedResult = sessionStorage.getItem('latestScanResult')
+        if (storedResult) {
+          try {
+            const data = JSON.parse(storedResult) as VulnerabilityAnalysisResponse
+            setScanResult(data)
+            setLoading(false)
+            return
+          } catch (error) {
+            console.error("Error parsing stored result:", error)
+          }
+        }
+      }
+
+      // 데모 데이터 로드
+      if (id === 'demo' || !id) {
         loadDemoData()
         return
       }
 
-      try {
-        const response = await fetch(`/api/analysis/status/${analysisId}`)
-        if (!response.ok) throw new Error("Failed to fetch results")
-
-        const data = await response.json()
-
-        if (data.status === "COMPLETED" && data.result) {
-          setScanResult(data.result)
-          setLoading(false)
-        } else if (data.status === "IN_PROGRESS") {
-          // If still in progress, poll again in 1 second
-          setTimeout(fetchResults, 1000)
-        } else {
-          // Handle error or unknown status
-          console.error("Analysis failed or unknown status:", data)
-          setLoading(false)
-        }
-      } catch (error) {
-        console.error("Error fetching results:", error)
-        setLoading(false)
-      }
+      // 실제 API에서 결과 가져오기 (향후 구현)
+      // TODO: 백엔드에 결과 조회 API가 추가되면 여기서 호출
+      loadDemoData()
     }
 
     const loadDemoData = () => {
-      const demoData: ScanResult = {
+      const demoData: VulnerabilityAnalysisResponse = {
         success: true,
         url: "https://www.naver.com/",
         vulnerabilities: [
           {
-            confidence: 0.99,
-            details: "Form input 'query' (type: search)에서 SQLi 취약점 가능성",
-            location: "https://www.naver.com/ - Form #1 action: https://search.naver.com/search.naver (GET)",
+            type: "SQL_INJECTION",
+            severity: "CRITICAL",
             pattern: "' OR 1=1--",
-            severity: "CRITICAL",
-            type: "SQL Injection",
+            details: "Form input 'query' (type: search)에서 SQLi 취약점 가능성",
+            confidence: 0.99,
+            location: "https://www.naver.com/ - Form #1 action: https://search.naver.com/search.naver (GET)",
           },
           {
-            confidence: 0.98,
-            details: "Form input 'query' (type: search)에서 SSTI 취약점 가능성",
-            location: "https://www.naver.com/ - Form #1 action: https://search.naver.com/search.naver (GET)",
-            pattern: "{{7*7}}",
-            severity: "CRITICAL",
             type: "SSTI",
-          },
-          {
-            confidence: 0.89,
-            details: "Form input 'query' (type: search)에서 COMMAND_INJECTION 취약점 가능성",
-            location: "https://www.naver.com/ - Form #1 action: https://search.naver.com/search.naver (GET)",
-            pattern: "; whoami",
             severity: "CRITICAL",
-            type: "Command Injection",
-          },
-          {
+            pattern: "{{7*7}}",
+            details: "Form input 'query' (type: search)에서 SSTI 취약점 가능성",
             confidence: 0.98,
-            details: "Form input 'query' (type: search)에서 PATH_TRAVERSAL 취약점 가능성",
             location: "https://www.naver.com/ - Form #1 action: https://search.naver.com/search.naver (GET)",
+          },
+          {
+            type: "COMMAND_INJECTION",
+            severity: "CRITICAL",
+            pattern: "; whoami",
+            details: "Form input 'query' (type: search)에서 COMMAND_INJECTION 취약점 가능성",
+            confidence: 0.89,
+            location: "https://www.naver.com/ - Form #1 action: https://search.naver.com/search.naver (GET)",
+          },
+          {
+            type: "PATH_TRAVERSAL",
+            severity: "HIGH",
             pattern: "../../../etc/passwd",
-            severity: "HIGH",
-            type: "Path Traversal",
-          },
-          {
-            confidence: 0.96,
-            details: "Form input 'query' (type: search)에서 XSS 취약점 가능성",
+            details: "Form input 'query' (type: search)에서 PATH_TRAVERSAL 취약점 가능성",
+            confidence: 0.98,
             location: "https://www.naver.com/ - Form #1 action: https://search.naver.com/search.naver (GET)",
-            pattern: "<script>alert('xss')</script>",
-            severity: "HIGH",
+          },
+          {
             type: "XSS",
+            severity: "HIGH",
+            pattern: "<script>alert('xss')</script>",
+            details: "Form input 'query' (type: search)에서 XSS 취약점 가능성",
+            confidence: 0.96,
+            location: "https://www.naver.com/ - Form #1 action: https://search.naver.com/search.naver (GET)",
           },
           {
-            confidence: 0.95,
-            details: "XSS 방어를 위한 CSP 헤더 누락",
-            location: "https://www.naver.com/",
-            pattern: "Content-Security-Policy 헤더 없음",
+            type: "CSP_MISSING",
             severity: "MEDIUM",
-            type: "CSP Missing",
+            pattern: "Content-Security-Policy 헤더 없음",
+            details: "XSS 방어를 위한 CSP 헤더 누락",
+            confidence: 0.95,
+            location: "https://www.naver.com/",
           },
           {
-            confidence: 0.95,
-            details: "MIME 타입 스니핑 방어 헤더 누락",
-            location: "https://www.naver.com/",
-            pattern: "X-Content-Type-Options 헤더 없음",
+            type: "MIME_SNIFFING",
             severity: "LOW",
-            type: "MIME Sniffing",
+            pattern: "X-Content-Type-Options 헤더 없음",
+            details: "MIME 타입 스니핑 방어 헤더 누락",
+            confidence: 0.95,
+            location: "https://www.naver.com/",
           },
         ],
         vulnerability_count: 7,
@@ -121,7 +125,7 @@ export function ScanResultsView({ analysisId }: ScanResultsViewProps) {
     }
 
     fetchResults()
-  }, [analysisId])
+  }, [analysisId, params])
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
@@ -191,47 +195,73 @@ export function ScanResultsView({ analysisId }: ScanResultsViewProps) {
   }
 
   const getSolution = (type: string) => {
+    // vulnerability.types.ts의 VULNERABILITY_SOLUTIONS 사용
     const solutions: Record<string, string[]> = {
-      "SQL Injection": [
+      SQL_INJECTION: [
         "Prepared Statement 사용",
         "파라미터 바인딩 적용",
         "입력값 검증 및 이스케이프 처리",
         "ORM 프레임워크 사용 권장",
       ],
-      SSTI: [
-        "템플릿 엔진 보안 모드 활성화",
-        "사용자 입력을 템플릿에 직접 전달하지 않기",
-        "입력값 검증 및 필터링",
-        "안전한 템플릿 렌더링 라이브러리 사용",
-      ],
-      "Command Injection": [
-        "쉘 명령어 직접 실행 피하기",
-        "안전한 API 사용",
-        "입력값 화이트리스트 검증",
-        "파라미터 이스케이프 처리",
-      ],
-      "Path Traversal": [
-        "절대 경로 사용",
-        "파일명 검증 및 정규화",
-        "허용된 디렉토리 내에서만 접근",
-        "chroot 환경 사용",
-      ],
       XSS: [
-        "출력 인코딩 적용",
+        "입력값 검증 및 출력 인코딩",
         "Content-Security-Policy 헤더 설정",
-        "HTML 태그 필터링",
-        "안전한 라이브러리 사용 (DOMPurify 등)",
+        "HttpOnly, Secure 쿠키 플래그 사용",
+        "XSS 방어 라이브러리 사용 (DOMPurify 등)",
       ],
-      "CSP Missing": [
-        "Content-Security-Policy 헤더 추가",
-        "적절한 CSP 정책 설정",
+      CSRF: [
+        "CSRF 토큰 구현",
+        "SameSite 쿠키 속성 설정",
+        "Referer 헤더 검증",
+        "중요 작업에 재인증 요구",
+      ],
+      COMMAND_INJECTION: [
+        "사용자 입력으로 시스템 명령 실행 금지",
+        "화이트리스트 기반 입력 검증",
+        "쉘 메타문자 이스케이프 처리",
+        "최소 권한 원칙 적용",
+      ],
+      PATH_TRAVERSAL: [
+        "파일 경로 정규화 및 검증",
+        "화이트리스트 기반 경로 제한",
+        "상대 경로 사용 금지",
+        "웹 루트 외부 접근 차단",
+      ],
+      SSTI: [
+        "템플릿 엔진 샌드박스 활성화",
+        "사용자 입력을 템플릿에 직접 사용 금지",
+        "안전한 템플릿 렌더링 함수 사용",
+        "입력값 검증 및 이스케이프",
+      ],
+      XXE: [
+        "XML 외부 엔티티 비활성화",
+        "안전한 XML 파서 사용",
+        "XML 입력 검증",
+        "JSON 등 대체 포맷 사용 고려",
+      ],
+      SSRF: [
+        "내부 IP 주소 접근 차단",
+        "URL 화이트리스트 검증",
+        "리다이렉트 제한",
+        "네트워크 레벨 접근 제어",
+      ],
+      OPEN_REDIRECT: [
+        "리다이렉트 URL 화이트리스트 검증",
+        "외부 URL 리다이렉트 제한",
+        "사용자 확인 단계 추가",
+        "상대 경로만 허용",
+      ],
+      CSP_MISSING: [
+        "Content-Security-Policy 헤더 설정",
         "인라인 스크립트 제한",
-        "nonce 또는 hash 기반 CSP 사용",
+        "nonce 또는 hash 기반 스크립트 허용",
+        "외부 리소스 로드 제한",
       ],
-      "MIME Sniffing": [
-        "X-Content-Type-Options: nosniff 헤더 추가",
-        "올바른 Content-Type 설정",
+      MIME_SNIFFING: [
+        "X-Content-Type-Options: nosniff 헤더 설정",
+        "올바른 Content-Type 헤더 설정",
         "파일 업로드 검증 강화",
+        "파일 확장자 화이트리스트 적용",
       ],
     }
     return solutions[type] || ["보안 전문가와 상담하여 적절한 대응 방안을 마련하세요."]
@@ -376,7 +406,7 @@ export function ScanResultsView({ analysisId }: ScanResultsViewProps) {
                     </td>
                     <td className="p-4">
                       <span className="text-gray-500 text-sm font-mono truncate max-w-xs block">
-                        {vuln.location.split(" - ")[0]}
+                        {vuln.location ? vuln.location.split(" - ")[0] : scanResult.url}
                       </span>
                     </td>
                     <td className="p-4 text-center">
@@ -443,12 +473,14 @@ export function ScanResultsView({ analysisId }: ScanResultsViewProps) {
               </div>
 
               {/* Location */}
-              <div>
-                <h3 className="text-sm font-semibold text-gray-500 mb-2">Location</h3>
-                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                  <p className="text-gray-700 font-mono text-sm break-all">{selectedVuln.location}</p>
+              {selectedVuln.location && (
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-500 mb-2">Location</h3>
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                    <p className="text-gray-700 font-mono text-sm break-all">{selectedVuln.location}</p>
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Payload Pattern */}
               <div>
