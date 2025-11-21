@@ -8,7 +8,7 @@ import { fileService } from "@/lib/services/file.service"
 
 // ✅ true = 포트폴리오용 (가짜 로딩)
 // ✅ false = 실제 연동용 (로그인 필수, 실제 서버 통신)
-const IS_DEMO_MODE = true
+const IS_DEMO_MODE = false
 
 export function HeroSectionDecryption() {
   const [authMessage, setAuthMessage] = useState("")

@@ -8,7 +8,7 @@ import { fileService } from "@/lib/services/file.service"
 
 // ✅ true = 포트폴리오용 (가짜 로딩)
 // ✅ false = 실제 연동용 (백엔드 팀원 코드 실행)
-const IS_DEMO_MODE = true
+const IS_DEMO_MODE = false
 
 export function HeroSection() {
   const [isDragging, setIsDragging] = useState(false)
