@@ -22,25 +22,25 @@ export interface OtpVerifyRequest {
 export const otpService = {
   // OTP 설정 초기화 (QR 코드 생성)
   setupOtp: async (): Promise<OtpSetupResponse> => {
-    const response = await apiClient.post('/otp/setup');
+    const response = await apiClient.post('/api/otp/setup');
     return response.data;
   },
 
   // OTP 활성화
   enableOtp: async (code: number) => {
-    const response = await apiClient.post('/otp/enable', { code });
+    const response = await apiClient.post('/api/otp/enable', { code });
     return response.data;
   },
 
   // OTP 비활성화
   disableOtp: async (code: number) => {
-    const response = await apiClient.post('/otp/disable', { code });
+    const response = await apiClient.post('/api/otp/disable', { code });
     return response.data;
   },
 
   // OTP 상태 확인
   getOtpStatus: async (): Promise<OtpStatusResponse> => {
-    const response = await apiClient.get('/otp/status');
+    const response = await apiClient.get('/api/otp/status');
     const data = response.data || {};
     // normalize different backend shapes: { enabled } or { otpEnabled }
     return {
@@ -52,7 +52,7 @@ export const otpService = {
 
   // OTP 코드 검증
   verifyOtp: async (data: OtpVerifyRequest) => {
-    const response = await apiClient.post('/otp/verify', data);
+    const response = await apiClient.post('/api/otp/verify', data);
     return response.data;
   },
 };

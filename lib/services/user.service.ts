@@ -21,19 +21,19 @@ export interface UpdateProfileRequest {
 export const userService = {
   // 사용자 프로필 조회
   getProfile: async (): Promise<UserProfile> => {
-    const response = await apiClient.get('/user/profile');
+    const response = await apiClient.get('/api/user/profile');
     return response.data;
   },
 
   // 사용자 프로필 수정
   updateProfile: async (data: UpdateProfileRequest) => {
-    const response = await apiClient.put('/user/profile', data);
+    const response = await apiClient.put('/api/user/profile', data);
     return response.data;
   },
 
   // 계정 삭제
   deleteAccount: async () => {
-    const response = await apiClient.delete('/user/account');
+    const response = await apiClient.delete('/api/user/account');
     return response.data;
   },
 };

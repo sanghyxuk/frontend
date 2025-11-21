@@ -20,7 +20,7 @@ export const vulnerabilityService = {
   ): Promise<VulnerabilityAnalysisResponse> => {
     try {
       const response = await apiClient.post<VulnerabilityAnalysisResponse>(
-        '/analysis/start',
+        '/api/analysis/start',
         { url }
       );
       return response.data;
