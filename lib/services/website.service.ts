@@ -57,4 +57,11 @@ export const websiteService = {
   inspectWebsite: async (data: { url: string }) => {
     return vulnerabilityService.startAnalysis(data.url);
   },
+
+  // 분석 이력 목록 조회 (페이징)
+  getAnalysisList: async (page = 0, size = 10) => {
+    const response = await apiClient.get("/api/analysis", { params: { page, size } })
+    return response.data
+  },
+  // 상세 조회 등은 필요시 추가
 };
