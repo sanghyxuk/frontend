@@ -119,11 +119,6 @@ export default function SignupPage() {
     } catch (err: any) {
       const errorMessage = err.response?.data?.message || "회원가입에 실패했습니다. 입력값을 확인해주세요."
       setError(errorMessage)
-      toast({
-        title: "회원가입 실패",
-        description: errorMessage,
-        variant: "destructive",
-      })
     } finally {
       setLoading(false)
     }
