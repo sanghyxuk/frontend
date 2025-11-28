@@ -16,26 +16,24 @@ export function Footer() {
       }`}
     >
       <div className="container mx-auto px-8 md:px-16 py-12">
-        {/* ✅ 수정: 로고 섹션이 2칸을 차지하고 나머지 섹션은 균등하게 나누도록 그리드 조정 */}
-        <div className="grid grid-cols-1 md:grid-cols-6 gap-8"> 
-          
-          {/* Company Info - 로고 이미지 영역 (MD에서 2칸 차지) */}
-          <div className="space-y-4 md:col-span-2"> 
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          {/* Company Info */}
+          <div className="space-y-4">
             <div className="flex items-center space-x-2">
-              <img 
-                src="/shield-hub-logo.png"
-                alt="Shield Hub Logo" 
-                className="h-10 w-auto"
-              />
+              <div className="w-8 h-8 bg-blue-500 rounded flex items-center justify-center">
+                <span className="text-white font-bold text-sm">S</span>
+              </div>
+              <span className="text-xl font-bold text-white">Shield Hub</span>
             </div>
             <p className="text-gray-400 text-sm">
-              쉴드 허브는 
-              지능형 파일 보안 및 <br></br>웹 취약점 분석을 제공하는 올인원 <br></br>보안 플랫폼입니다.
+              최첨단 보안 기술로 디지털 자산을 보호하는
+              <br />
+              종합 보안 솔루션 플랫폼입니다.
             </p>
           </div>
 
-          {/* 개발자 */}
-          <div className="space-y-4 md:col-span-1">
+          {/* 제품 */}
+          <div className="space-y-4">
             <h3 className="text-lg font-semibold text-white">개발자</h3>
             <ul className="space-y-2">
               <li>
@@ -52,8 +50,8 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* 역할 */}
-          <div className="space-y-4 md:col-span-1">
+          {/* 회사 */}
+          <div className="space-y-4">
             <h3 className="text-lg font-semibold text-white">역할</h3>
             <ul className="space-y-2">
               <li>
@@ -69,28 +67,10 @@ export function Footer() {
               {/* ... 나머지 링크 ... */}
             </ul>
           </div>
-          
-          {/* 이메일 섹션 */}
-          <div className="space-y-4 md:col-span-1">
-            <h3 className="text-lg font-semibold text-white">이메일</h3>
-            <ul className="space-y-2">
-              <li>
-                <a href="mailto:rachel136@naver.com" className="text-gray-400 hover:text-white text-sm hover:underline">
-                  rachel136@naver.com
-                </a>
-              </li>
-              <li>
-                <a href="mailto:yunsik134@naver.com" className="text-gray-400 hover:text-white text-sm hover:underline">
-                  yunsik134@naver.com
-                </a>
-              </li>
-              {/* 이메일 주소는 실제 주소로 변경하여 사용해주세요 */}
-            </ul>
-          </div>
 
-          {/* 소속 */}
-          <div className="space-y-4 md:col-span-1">
-            <h3 className="text-lg font-semibold text-white">소속</h3>
+          {/* 지원 */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-white">정보</h3>
             <ul className="space-y-2">
               <li>
                 <a href="#" className="text-gray-400 hover:text-white text-sm">
@@ -109,9 +89,14 @@ export function Footer() {
 
         <div className="border-t border-gray-800 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-400 text-sm">© 2025. Developed by 하서윤/표상혁 for Capstone Design.</p>
+            <p className="text-gray-400 text-sm">© 2025 Shield Hub. All rights reserved.</p>
             <div className="flex space-x-6 mt-4 md:mt-0">
-              
+              <a href="#" className="text-gray-400 hover:text-white text-sm">
+                개인정보처리방침
+              </a>
+              <a href="#" className="text-gray-400 hover:text-white text-sm">
+                이용약관
+              </a>
             </div>
           </div>
         </div>

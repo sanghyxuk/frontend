@@ -33,7 +33,7 @@ export const fileService = {
     const formData = new FormData();
     formData.append('file', file);
 
-    const response = await apiClient.post('/files/encrypt', formData, {
+    const response = await apiClient.post('/api/files/encrypt', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -54,7 +54,7 @@ export const fileService = {
     formData.append('keyFile', keyFile);
     formData.append('originalFileName', originalFileName);
 
-    const response = await apiClient.post('/files/decrypt-upload', formData, {
+    const response = await apiClient.post('/api/files/decrypt-upload', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -66,19 +66,19 @@ export const fileService = {
 
   // 파일 목록 조회
   getFileList: async (): Promise<FileListItem[]> => {
-    const response = await apiClient.get('/files/list');
+    const response = await apiClient.get('/api/files/list');
     return response.data;
   },
 
   // 파일 삭제
   deleteFile: async (fileId: number) => {
-    const response = await apiClient.delete(`/files/${fileId}`);
+    const response = await apiClient.delete(`/api/files/${fileId}`);
     return response.data;
   },
 
   // 파일 다운로드
   downloadFile: async (fileId: number) => {
-    const response = await apiClient.get(`/files/download/${fileId}`, {
+    const response = await apiClient.get(`/api/files/download/${fileId}`, {
       responseType: 'blob',
     });
     return response.data;

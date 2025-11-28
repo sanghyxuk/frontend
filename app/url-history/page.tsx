@@ -2,36 +2,44 @@
 
 import { Card } from "@/components/ui/card"
 import { useRef, useState, useEffect } from "react"
+import { websiteService } from "@/lib/services"
 
 export default function URLHistoryPage() {
   const [documents, setDocuments] = useState<
     Array<{
       id: number | string
-      title: string
+      targetUrl: string
       status: string
-      date: string
-      type?: string
+      startedAt: string
+      finishedAt?: string | null
+      errorMessage?: string | null
     }>
   >([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [page, setPage] = useState(0)
+  const [size, setSize] = useState(10)
+  const [totalPages, setTotalPages] = useState(1)
 
   const scrollContainerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const loadDocuments = () => {
-      const uploadedFiles = JSON.parse(localStorage.getItem("uploadedFiles") || "[]")
-      // Filter for URL inspection type if needed
-      setDocuments(uploadedFiles)
+    const loadDocuments = async () => {
+      setLoading(true)
+      setError(null)
+      try {
+        const res = await websiteService.getAnalysisList(page, size)
+        setDocuments(res.items)
+        setTotalPages(res.totalPages)
+      } catch (err: any) {
+        setError(err?.message || "분석 이력 불러오기 실패")
+        setDocuments([])
+      } finally {
+        setLoading(false)
+      }
     }
-
     loadDocuments()
-
-    const handleFilesUploaded = () => {
-      loadDocuments()
-    }
-
-    window.addEventListener("filesUploaded", handleFilesUploaded)
-    return () => window.removeEventListener("filesUploaded", handleFilesUploaded)
-  }, [])
+  }, [page, size])
 
   const scrollRight = () => {
     if (scrollContainerRef.current) {
@@ -46,8 +54,15 @@ export default function URLHistoryPage() {
           <h1 className="text-4xl font-bold text-gray-900 mb-3">URL 취약점 분석 이력</h1>
           <p className="text-gray-600">웹사이트 보안 검사 기록을 확인하세요</p>
         </div>
-
-        {documents.length === 0 ? (
+        {loading ? (
+          <div className="text-center py-16">
+            <p className="text-gray-500 text-lg">불러오는 중...</p>
+          </div>
+        ) : error ? (
+          <div className="text-center py-16">
+            <p className="text-red-500 text-lg">{error}</p>
+          </div>
+        ) : documents.length === 0 ? (
           <div className="text-center py-16">
             <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -88,13 +103,19 @@ export default function URLHistoryPage() {
                     </div>
 
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-bold text-xl mb-2 text-gray-900 truncate">{doc.title}</h3>
+                      <h3 className="font-bold text-xl mb-2 text-gray-900 truncate">{doc.targetUrl}</h3>
                       <div className="flex items-center gap-2 mb-2">
                         <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
                           {doc.status}
                         </span>
                       </div>
-                      <p className="text-sm text-gray-500 mb-3">{doc.date}</p>
+                      <p className="text-sm text-gray-500 mb-3">
+                        {doc.startedAt ? new Date(doc.startedAt).toLocaleString() : ""}
+                        {doc.finishedAt ? ` ~ ${new Date(doc.finishedAt).toLocaleString()}` : ""}
+                      </p>
+                      {doc.errorMessage && (
+                        <p className="text-sm text-red-500 mb-2">{doc.errorMessage}</p>
+                      )}
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                         <p className="text-sm text-gray-700 font-medium">보안 상태 정상</p>
