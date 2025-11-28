@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL, // 환경변수명 변경
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api',
   headers: {
     'Content-Type': 'application/json',
   },
