@@ -1,13 +1,12 @@
-"use client" // 👈 1. usePathname 훅을 사용하기 위해 추가합니다.
+"use client"
 
-import { usePathname } from "next/navigation" // 👈 2. 훅을 불러옵니다.
+import { usePathname } from "next/navigation"
 
 export function Footer() {
-  const pathname = usePathname() // 👈 3. 현재 페이지의 URL 경로를 가져옵니다.
-  const isHomePage = pathname === "/" // 👈 4. 홈페이지인지 확인합니다.
+  const pathname = usePathname()
+  const isHomePage = pathname === "/"
 
   return (
-    // 👇 5. 홈페이지 여부에 따라 다른 스타일을 적용합니다.
     <footer
       className={`w-full ${
         isHomePage
@@ -16,11 +15,13 @@ export function Footer() {
       }`}
     >
       <div className="container mx-auto px-8 md:px-16 py-12">
-        {/* ✅ 수정: 로고 섹션이 2칸을 차지하고 나머지 섹션은 균등하게 나누도록 그리드 조정 */}
-        <div className="grid grid-cols-1 md:grid-cols-6 gap-8"> 
+        
+        {/* ⭐️ 수정: 모바일 기본을 grid-cols-2로 변경하여 2x2 레이아웃을 구현합니다. */}
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-y-10 md:gap-8"> 
           
-          {/* Company Info - 로고 이미지 영역 (MD에서 2칸 차지) */}
-          <div className="space-y-4 md:col-span-2"> 
+          {/* 1. Company Info - 로고 섹션 (모바일: 2칸 차지) */}
+          {/* 로고 섹션은 모바일에서 너비를 전부 차지하도록 col-span-2를 지정합니다. */}
+          <div className="space-y-4 col-span-2 md:col-span-2"> 
             <div className="flex items-center space-x-2">
               <img 
                 src="/shield-hub-logo.png"
@@ -28,14 +29,14 @@ export function Footer() {
                 className="h-10 w-auto"
               />
             </div>
-            <p className="text-gray-400 text-sm">
-              쉴드 허브는 
-              지능형 파일 보안 및 <br></br>웹 취약점 분석을 제공하는 올인원 <br></br>보안 플랫폼입니다.
+            <p className="text-gray-400 text-sm leading-relaxed"> 
+              쉴드 허브는 지능형 파일 보안 및 <br className="md:hidden"></br>웹 취약점 분석을 제공하는 올인원 <br className="md:hidden"></br>보안 플랫폼입니다.
             </p>
           </div>
-
-          {/* 개발자 */}
-          <div className="space-y-4 md:col-span-1">
+          
+          {/* 2. 개발자 섹션 (모바일: 1칸 차지) */}
+          {/* grid-cols-2 내에서 1칸을 차지 (2x2 구성의 좌상단) */}
+          <div className="space-y-4 col-span-1 md:col-span-1">
             <h3 className="text-lg font-semibold text-white">개발자</h3>
             <ul className="space-y-2">
               <li>
@@ -52,26 +53,28 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* 역할 */}
-          <div className="space-y-4 md:col-span-1">
+          {/* 3. 역할 섹션 (모바일: 1칸 차지) */}
+          {/* grid-cols-2 내에서 1칸을 차지 (2x2 구성의 우상단) */}
+          <div className="space-y-4 col-span-1 md:col-span-1">
             <h3 className="text-lg font-semibold text-white">역할</h3>
             <ul className="space-y-2">
               <li>
                 <a href="#" className="text-gray-400 hover:text-white text-sm">
-                  프론트엔드
+                  프론트엔드&UXUI
                 </a>
               </li>
               <li>
                 <a href="#" className="text-gray-400 hover:text-white text-sm">
-                  백엔드
+                  백엔드&AI개발
                 </a>
               </li>
               {/* ... 나머지 링크 ... */}
             </ul>
           </div>
           
-          {/* 이메일 섹션 */}
-          <div className="space-y-4 md:col-span-1">
+          {/* 4. 이메일 섹션 (모바일: 1칸 차지) */}
+          {/* grid-cols-2 내에서 1칸을 차지 (2x2 구성의 좌하단) */}
+          <div className="space-y-4 col-span-1 md:col-span-1">
             <h3 className="text-lg font-semibold text-white">이메일</h3>
             <ul className="space-y-2">
               <li>
@@ -84,12 +87,12 @@ export function Footer() {
                   yunsik134@naver.com
                 </a>
               </li>
-              {/* 이메일 주소는 실제 주소로 변경하여 사용해주세요 */}
             </ul>
           </div>
 
-          {/* 소속 */}
-          <div className="space-y-4 md:col-span-1">
+          {/* 5. 소속 섹션 (모바일: 1칸 차지) */}
+          {/* grid-cols-2 내에서 1칸을 차지 (2x2 구성의 우하단) */}
+          <div className="space-y-4 col-span-1 md:col-span-1">
             <h3 className="text-lg font-semibold text-white">소속</h3>
             <ul className="space-y-2">
               <li>
@@ -107,9 +110,11 @@ export function Footer() {
           </div>
         </div>
 
+        {/* Copyright 섹션 */}
         <div className="border-t border-gray-800 mt-12 pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center">
+          <div className="flex flex-col md:flex-row justify-between items-center text-center md:text-left">
             <p className="text-gray-400 text-sm">© 2025. Developed by 하서윤/표상혁 for Capstone Design.</p>
+            {/* 소셜 아이콘이 들어갈 자리 */}
             <div className="flex space-x-6 mt-4 md:mt-0">
               
             </div>

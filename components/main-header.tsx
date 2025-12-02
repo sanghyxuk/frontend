@@ -17,9 +17,7 @@ export function Header() {
   // 경로 상태 변수 정의
   const isHomePage = pathname === "/"
   const isSignUpPage = pathname === "/signup"
-  // ✅ 추가: 로그인 페이지 확인 변수
   const isLoginPage = pathname === "/login" 
-  // 서비스 페이지들
   const isServicePage = pathname === "/encryption" || pathname === "/decryption" || pathname === "/website-inspection"
 
   // 로그인 상태 확인
@@ -74,9 +72,17 @@ export function Header() {
   }
 
   // 스타일 변수 정의
-  const textColor = isHomePage ? "text-white" : "text-gray-900"
+  // ✅ 메뉴가 열리면 isMenuOpen 상태에 따라 텍스트 색상을 결정합니다.
+  const textColor = isHomePage && !isMenuOpen ? "text-white" : "text-gray-900" 
   const hoverColor = "hover:text-gray-600"
-  const bgColor = isHomePage ? "bg-transparent" : "bg-white border-b border-gray-200"
+  
+  // ⭐️ 수정된 부분: 햄버거 메뉴가 열려있거나(!isHomePage)일 경우 흰색 배경 적용
+  const bgColor = isMenuOpen || !isHomePage
+    ? "bg-white border-b border-gray-200" // 메뉴 열림 또는 홈 페이지 아님: 흰색 배경
+    : "bg-transparent" // 메뉴 닫힘 & 홈 페이지: 투명 배경
+  
+  // ✅ 추가: 모바일 메뉴 내부 텍스트 색상을 흰색 배경에 맞춰 항상 검정색으로 지정
+  const mobileTextColor = "text-gray-900" 
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 ${bgColor}`} style={{ width: '100%', boxSizing: 'border-box' }}>
@@ -141,7 +147,7 @@ export function Header() {
                     ${
                       isHomePage 
                         ? 'bg-transparent border border-white text-white' // 홈 페이지일 때
-                        : isSignUpPage || isServicePage || isLoginPage // ✅ 수정: 로그인 페이지 조건 추가
+                        : isSignUpPage || isServicePage || isLoginPage 
                           ? `${textColor} border border-transparent` // 일반 텍스트 스타일
                           : 'bg-blue-600 text-white' // 그 외 페이지일 때
                     } 
@@ -150,7 +156,7 @@ export function Header() {
                     py-2 px-4 
                     rounded-md 
                     text-center 
-                    text-sm font-medium // ✅ 수정: 글자 스타일 통일
+                    text-sm font-medium 
                     border border-transparent
                   `}
                 >
@@ -175,24 +181,26 @@ export function Header() {
 
         {/* 모바일 메뉴 */}
         {isMenuOpen && (
-          <div className={`md:hidden py-4 border-t ${isHomePage ? "border-white/20" : "border-gray-200"}`}>
-            <nav className="flex flex-col space-y-4">
-              <Link href="/encryption" className={`${textColor} ${hoverColor} transition-colors text-base`}>
+          // ✅ 수정: bg-white 클래스를 추가하고, 절대 위치를 사용하여 메뉴 배경을 흰색으로 고정
+          <div className={`md:hidden py-4 bg-white shadow-lg absolute left-0 right-0 top-20`}> 
+            <nav className="flex flex-col space-y-4 px-8 md:px-16">
+              {/* ✅ 수정: 텍스트 색상을 mobileTextColor 변수로 고정 */}
+              <Link href="/encryption" className={`${mobileTextColor} ${hoverColor} transition-colors text-base`}>
                 파일 암호화
               </Link>
-              <Link href="/decryption" className={`${textColor} ${hoverColor} transition-colors text-base`}>
+              <Link href="/decryption" className={`${mobileTextColor} ${hoverColor} transition-colors text-base`}>
                 파일 복호화
               </Link>
-              <Link href="/website-inspection" className={`${textColor} ${hoverColor} transition-colors text-base`}>
+              <Link href="/website-inspection" className={`${mobileTextColor} ${hoverColor} transition-colors text-base`}>
                 웹사이트 점검
               </Link>
               <div className="flex flex-col space-y-4 pt-4 border-t border-gray-200">
                 {isLoggedIn ? (
                   <>
-                    <span className={`${textColor} text-sm`}>
+                    <span className={`${mobileTextColor} text-sm`}> 
                       {userName ? `${userName}님` : '환영합니다'}
                     </span>
-                    <Link href="/settings" className={`${textColor} ${hoverColor} transition-colors flex items-center space-x-2`}>
+                    <Link href="/settings" className={`${mobileTextColor} ${hoverColor} transition-colors flex items-center space-x-2`}> 
                       <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
                           strokeLinecap="round"
@@ -211,33 +219,28 @@ export function Header() {
                     </Link>
                     <button
                       onClick={handleLogout}
-                      className={`${textColor} ${hoverColor} transition-colors text-left py-2 px-4 rounded-md border ${isHomePage ? 'border-white' : 'border-gray-300'} text-sm font-medium`}
+                      className={`text-left py-2 px-4 rounded-md border border-gray-300 text-sm font-medium ${mobileTextColor} ${hoverColor} transition-colors`}
                     >
                       로그아웃
                     </button>
                   </>
                 ) : (
                   <>
-                    {/* 모바일 로그인 버튼: 글자 스타일 통일 */}
-                    <Link href="/login" className={`${textColor} ${hoverColor} transition-colors py-2 text-sm font-medium`}>
+                    {/* 모바일 로그인 버튼 */}
+                    <Link href="/login" className={`${mobileTextColor} ${hoverColor} transition-colors py-2 text-sm font-medium`}>
                       로그인
                     </Link>
                     {/* 모바일 회원가입 버튼 수정: 로그인 페이지 조건 추가 및 글자 스타일 통일 */}
                     <Link 
                       href="/signup" 
                       className={`
-                        ${isHomePage 
-                            ? 'bg-white text-blue-600' // 홈 페이지일 때
-                            : isSignUpPage || isServicePage || isLoginPage // ✅ 수정: 로그인 페이지 조건 추가
-                                ? `${textColor} border border-transparent` // 일반 텍스트 스타일
-                                : 'bg-blue-600 text-white' // 그 외 페이지일 때
-                        } 
+                        bg-blue-600 text-white 
                         hover:opacity-90 
                         transition-opacity 
                         py-2 px-4 
                         rounded-md 
                         text-center 
-                        text-sm font-medium // ✅ 수정: 글자 스타일 통일
+                        text-sm font-medium
                       `}
                     >
                       회원가입
