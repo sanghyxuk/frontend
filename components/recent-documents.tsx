@@ -88,7 +88,7 @@ export function RecentDocuments() {
     <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-900 mb-3">최근 검사한 방법</h2>
+          <h2 className="text-4xl font-bold text-gray-900 mb-3">최근 검사한 목록</h2>
           <p className="text-gray-600">최근에 암호화한 파일 목록을 확인하세요</p>
         </div>
 
