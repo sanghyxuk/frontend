@@ -3,6 +3,7 @@
 import { Card } from "@/components/ui/card"
 import { useRef, useState, useEffect } from "react"
 import { fileService, type FileListItem } from "@/lib/services/file.service"
+import { usePathname } from "next/navigation" 
 
 export function RecentDocuments() {
   const [documents, setDocuments] = useState<
@@ -19,6 +20,10 @@ export function RecentDocuments() {
   const [error, setError] = useState("")
 
   const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const pathname = usePathname()
+
+  // ⭐️ 수정: 오직 파일 암호화 페이지('/encryption')에서만 True가 되도록 변경
+  const isFilePage = pathname === '/encryption'; 
 
   useEffect(() => {
     const mapFromApi = (list: FileListItem[]) =>
@@ -82,6 +87,12 @@ export function RecentDocuments() {
     }
   }
 
+  // ⭐️ 파일 암호화 페이지가 아니면 렌더링하지 않음
+  if (!isFilePage) {
+      return null;
+  }
+
+  // 로그인 체크 (기존 로직 유지)
   if (!isLoggedIn) return null
 
   return (
