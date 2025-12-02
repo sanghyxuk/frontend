@@ -223,7 +223,7 @@ export function HeroSectionDecryption() {
                 <div className="w-full space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      암호화된 파일 (.enc)
+                      암호화된 파일
                     </label>
                     <div className="flex gap-2">
                       <Input

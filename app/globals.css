@@ -119,7 +119,8 @@
   background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), url("/images/cyber.png");
   background-size: cover;
   background-position: center;
-  background-attachment: fixed;
+  /* ⭐️ 수정된 부분: fixed를 제거하여 모바일 렌더링 오류 해결 */
+  background-attachment: scroll; 
   background-repeat: no-repeat;
   position: relative;
   overflow: hidden;
